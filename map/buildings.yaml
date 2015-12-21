@@ -4,7 +4,7 @@
 cameras:
     camera1:
         type: perspective
-        position: [114.1833, 22.3128, 16] # lon/lat for the a part of Kowloon Hong Kong at zoom 16
+        position: [114.1838, 22.3188, 16] # lon/lat for the a part of Kowloon Hong Kong at zoom 16
 
 labels-global:
     - &text_visible_continent         true
