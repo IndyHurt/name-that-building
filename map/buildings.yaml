@@ -731,7 +731,7 @@ layers:
             draw:
                 icons:
                     sprite: building
-                    color: blue  #aqua
+                    color: aqua
                     visible: true
                     priority: 1
                 text:
@@ -746,39 +746,59 @@ layers:
         filter:
             all:
                 - name: true
-                - $geometry: [polygon]
-            any:
                 - kind: residential            
         draw:
             polygons:
-                color: blue  #'#bdadbf'
+                color:  '#bdadbf'
                 order: function() { if( $zoom < 17) { return 14; } else { return 12; } }
-                #extrude: function() { return feature.height || 20; }
+                interactive: true
             outline:
                 style: lines
                 order: 10
                 color: '#d534df'
                 width: [[14,0.1px],[15,0.5px],[17,0.5px],[18,0.75px],[19,0.25m]]
-                #extrude: function() { return feature.height || 20; }
+        labels:
+            filter: { $geometry: [point], $zoom: { min: 16 } }
+            draw:
+                text:
+                    interactive: false
+                    move_into_tile: true
+                    order: 101
+                    priority: 4
+                    visible: true
+                    text_source: function() { if( feature.name ) { return feature.name; } else { return 'Needs name'; } }
+                    font:
+                        family: Helvetica
+                        weight: 500
+                        style: italic
+                        fill: '#8c50c4'
+                        size: 12px
+                        stroke: { color: '#cdbbd7', width: 2 }
+
     buildings-bad:
         data: { source: osm, layer: [buildings] }
         filter:
             all:
                 - name: false
                 - $geometry: [polygon]
-            any:
                 - kind: residential
+            any:
+                # limit show smaller landuse areas to higher zooms
+                - { $zoom: [13,14,15,16], area: { min: 2000 } }
+                - { $zoom: [13,14,15,16], volume: { min: 50000 } }
+                - { $zoom: { min: 17 }, area: { min: 1000 } }
+                - { $zoom: { min: 17 }, volume: { min: 20000 } }
         draw:
             polygons:
-                color: red  #'#dd7a7a'
-                order: function() { if( $zoom < 17) { return 14; } else { return 12; } }
-                #extrude: function() { return feature.height || 20; }
+                color: aqua
+                order: 101
+                interactive: true
             outline:
                 style: lines
-                order: 10
-                color: '#df9c34'
-                width: [[14,0.1px],[15,0.5px],[16,1.25px],[17,2.0px],[18,2.5px],[19,2m]]
-                #extrude: function() { return feature.height || 20; }
+                color: blue
+                order: 100
+                join: round
+                width: [[13,2px],[15,1.5px],[17,2.0px],[18,2.5px],[19,2m]]
 
     # Map overlays for styling the server response (using special source layer names) for route line, find_me location gem, and search result pins
     route:
