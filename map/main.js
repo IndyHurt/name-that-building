@@ -165,7 +165,7 @@ map = (function () {
                 popup.style.left = (pixel.x + 0) + 'px';
                 popup.style.top = (pixel.y + 0) + 'px';
                 
-                if ( scene.selection.feature.properties.kind == 'building' && !scene.selection.feature.properties.name ) 
+                if ( scene.selection.feature.properties.kind == 'residential' && !scene.selection.feature.properties.name ) 
                 {
 	                popup.style.visibility = 'visible';
 	            }
