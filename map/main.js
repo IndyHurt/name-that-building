@@ -129,8 +129,8 @@ map = (function () {
 	                popup.style.visibility = 'visible';
 	            }
                 popup.innerHTML = '<span class="labelInner">' + 'You found a building that needs help!' + '</span><br>';
-                popup.innerHTML += '<span class="labelInner">' + '<a target="_blank" href="' + url + ' onclick="trackOutboundLink("' + url + '"); return false;">Edit with iD ➹</a>' + '</span><br>';
-                popup.innerHTML += '<span class="labelInner">' + '<a target="_blank" href="' + josmUrl + ' onclick="trackOutboundLink("' + josmUrl + '"); return false;">Edit with JOSM ➹</a>' + '</span><br>';
+                popup.innerHTML += '<span class="labelInner">' + '<a target="_blank" href="' + url + '" onclick="trackOutboundLink("' + url + '"); return false;">Edit with iD ➹</a>' + '</span><br>';
+                popup.innerHTML += '<span class="labelInner">' + '<a target="_blank" href="' + josmUrl + '" onclick="trackOutboundLink("' + josmUrl + '"); return false;">Edit with JOSM ➹</a>' + '</span><br>';
             });
         });
 
