@@ -81,47 +81,6 @@ map = (function () {
         var info = document.getElementById('info'); // rollover-popup
         var popup = document.getElementById('popup'); // click-popup
 
-        // Show selected feature on hover
-//         map.getContainer().addEventListener('mousemove', function (event) {
-//             if (picking) return;
-//             var pixel = { x: event.clientX, y: event.clientY };
-// 
-//             scene.getFeatureAt(pixel).then(function(selection) {
-//                 if (!selection) {
-//                     return;
-//                 }
-//                 var feature = selection.feature;
-//                 if (feature != null) {
-// 
-//                     var label = '';
-//                     if (feature.properties != null) {
-// 
-//                         var obj = JSON.parse(JSON.stringify(feature.properties));
-//                         label = "";
-//                         for (x in feature.properties) {
-//                             if (x == "sort_key" || x == "id" || x == "source") continue;
-//                             val = feature.properties[x]
-//                             label += "<span class='labelLine' key="+x+" value="+val+" onclick='setValuesFromSpan(this)'>"+x+" : "+val+"</span><br>"
-//                         }
-//                     }
-// 
-//                     if (label != '') {
-//                         info.innerHTML = '<span class="labelInner">' + label + '</span>';
-//                         info.style.left = (pixel.x + 5) + 'px';
-//                         info.style.top = (pixel.y + 10) + 'px';
-//                         info.style.visibility = 'visible';
-//                     }
-//                     else if (info.parentNode != null) {
-//                         info.style.visibility = 'hidden';
-//                     }
-//                 }
-//                 else if (info.parentNode != null) {
-//                     info.style.visibility = 'hidden';
-//                 }
-//             });
-// 
-//         });
-
         map.addEventListener('mousemove', function (e) { latlng = [e.latlng.lat, e.latlng.lng]; });
 
         // feature edit popup
@@ -145,7 +104,7 @@ map = (function () {
                 var position = '19' + '/' + latlng[0] + '/' + latlng[1];
 
                 if (scene.selection.feature && scene.selection.feature.properties.id) {
-                    url += 'node=' + scene.selection.feature.properties.id + '#map=' + position;
+                    url += 'way=' + scene.selection.feature.properties.id + '#map=' + position;
                 }
 
                 var josmUrl = 'http://www.openstreetmap.org/edit?editor=remote#map='+position;
@@ -165,13 +124,13 @@ map = (function () {
                 popup.style.left = (pixel.x + 0) + 'px';
                 popup.style.top = (pixel.y + 0) + 'px';
                 
-                if ( scene.selection.feature.properties.kind == 'residential' && !scene.selection.feature.properties.name ) 
+                if ( (scene.selection.feature.properties.kind == 'residential' || scene.selection.feature.properties.kind == 'apartments') && !scene.selection.feature.properties.name ) 
                 {
 	                popup.style.visibility = 'visible';
 	            }
                 popup.innerHTML = '<span class="labelInner">' + 'You found a building that needs help!' + '</span><br>';
-                popup.innerHTML += '<span class="labelInner">' + '<a target="_blank" href="' + url + '">Edit with iD ➹</a>' + '</span><br>';
-                popup.innerHTML += '<span class="labelInner">' + '<a target="_blank" href="' + josmUrl + '">Edit with JOSM ➹</a>' + '</span><br>';
+                popup.innerHTML += '<span class="labelInner">' + '<a target="_blank" href="' + url + ' onclick="trackOutboundLink("' + url + '"); return false;">Edit with iD ➹</a>' + '</span><br>';
+                popup.innerHTML += '<span class="labelInner">' + '<a target="_blank" href="' + josmUrl + ' onclick="trackOutboundLink("' + josmUrl + '"); return false;">Edit with JOSM ➹</a>' + '</span><br>';
             });
         });
 
@@ -179,8 +138,39 @@ map = (function () {
             info.style.visibility = 'hidden';
             popup.style.visibility = 'hidden';
         });
-
     }
+
+	function long2tile(lon,zoom) { return (Math.floor((lon+180)/360*Math.pow(2,zoom))); }
+	function lat2tile(lat,zoom)  { return (Math.floor((1-Math.log(Math.tan(lat*Math.PI/180) + 1/Math.cos(lat*Math.PI/180))/Math.PI)/2 *Math.pow(2,zoom))); }    
+
+    /***** Render loop *****/
+	
+	function addGUI () {
+		// Link to edit in OSM - hold 'e' and click
+		function onMapClick(e) {
+			if (key.shift) {
+				var url = 'https://www.openstreetmap.org/edit?';
+
+				if (scene.selection.feature && scene.selection.feature.id) {
+					url += 'way=' + scene.selection.feature.id;
+				}
+
+				if (scene.center) {
+					url += '#map=' + scene.baseZoom(scene.zoom) + '/' + scene.center.lat + '/' + scene.center.lng;
+				}
+
+				window.open(url, '_blank');
+			}
+
+ 			if (key.command) {
+				var url = 'http://vector.mapzen.com/osm/all/' + scene.tile_zoom + '/' + long2tile(e.latlng.lng,scene.tile_zoom)  + '/' + lat2tile(e.latlng.lat,scene.tile_zoom) + '.topojson?api_key=vector-tiles-HqUVidw';
+				window.open(url, '_blank');
+				//console.log( e );
+			}
+		}
+
+		map.on('click', onMapClick);		
+	}
 
     function inIframe () {
         try {
@@ -194,6 +184,7 @@ map = (function () {
     window.addEventListener('load', function () {
         // Scene initialized
         layer.on('init', function() {
+	        addGUI();
             initFeatureSelection();
             //console.log('1 map loc:', map_start_location, '\ncamera pos:', scene.camera.position);
             if (defaultpos && typeof scene.camera.position != "undefined") {
