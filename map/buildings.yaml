@@ -701,7 +701,7 @@ layers:
         data: { source: osm, layer: [buildings] }
         filter: 
             all:
-                - kind: [residential]    #[false,building,commercial,residential,warehouse,public,dormitory]
+                - kind: [residential, apartments]    #[false,building,commercial,residential,warehouse,public,dormitory]
                 - label_placement: [yes]
         draw:
             icons:
@@ -746,7 +746,7 @@ layers:
         filter:
             all:
                 - name: true
-                - kind: residential            
+                - kind: [residential, apartments]
         draw:
             polygons:
                 color:  '#bdadbf'
@@ -766,7 +766,6 @@ layers:
                     order: 101
                     priority: 4
                     visible: true
-                    text_source: function() { if( feature.name ) { return feature.name; } else { return 'Needs name'; } }
                     font:
                         family: Helvetica
                         weight: 500
@@ -781,13 +780,11 @@ layers:
             all:
                 - name: false
                 - $geometry: [polygon]
-                - kind: residential
-            any:
-                # limit show smaller landuse areas to higher zooms
-                - { $zoom: [13,14,15,16], area: { min: 2000 } }
-                - { $zoom: [13,14,15,16], volume: { min: 50000 } }
-                - { $zoom: { min: 17 }, area: { min: 1000 } }
-                - { $zoom: { min: 17 }, volume: { min: 20000 } }
+                - kind: [residential, apartments]
+#            any:
+#                # small buildings tend to be houses, not multi-unit buildings
+#                - { area: { min: 1000 } }
+#                - { volume: { min: 20000 } }
         draw:
             polygons:
                 color: aqua
