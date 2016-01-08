@@ -696,7 +696,7 @@ scene:
         color: *scene1
 
 layers:
-    # Special overlay for Targeted Editing seris
+    # Special overlay for Targeted Editing series
     buildings:
         data: { source: osm, layer: [buildings] }
         filter: 
