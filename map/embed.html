@@ -114,7 +114,7 @@
 	*/
 	var trackOutboundLink = function(url, post_name, editor) {
        // ga('send', 'event', [eventCategory], [eventAction], [eventLabel], [eventValue], [fieldsObject]);
-	   ga('send', 'event', 'outbound_targeted_editing', post_name, editor, {
+	   ga('send', 'event', 'outbound_targeted_editing', post_name, url, {
 		 'transport': 'beacon',
 		 'hitCallback': function(){document.location = url;}
 	   });
