@@ -230,5 +230,4 @@ map = (function () {
     });
 
     return map;
-
 }());
